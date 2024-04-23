@@ -15,36 +15,39 @@ Mvh Johannes
         <small class="text-muted">By Johannes Sirugo</small>
     </h1>
 
-
-    <button hidden="@(gameStarted)" class="btn btn-success" @onclick="StartGame">Start Game</button>
-    <button hidden="@(!gameStarted)" class="btn btn-danger" @onclick="RestartGame">Restart Game</button>
+    <button hidden="@(gameStarted)" class="btn btn-success" @onclick="StartGame">Start Match</button>
+    <button hidden="@(!gameStarted)" class="btn btn-danger" @onclick="RestartGame">Restart Match</button>
 
     <br /><br />
     <button class="btn btn-secondary" @onclick="PlayerAScores" disabled="@(!gameStarted || isGameOver)">Player A scores!</button>
     <button class="btn btn-secondary" @onclick="PlayerBScores" disabled="@(!gameStarted || isGameOver)">Player B scores!</button>
     <br />
     <hr>
-    <h2>Current Match Score: @currentMatchScore </h2>
-    <h2>Player A Score: @playerAScore</h2>
-    <h2>Player B Score: @playerBScore</h2>
+    <h2>
+        First to score 3!
+      
+        <br />
+        Match Score: @currentMatchScore <br />
+        <strong hidden="@string.IsNullOrEmpty(setWinner)">@setWinner took the last set!</strong>
+    </h2>
+    
+    @if (playerASets == 2 && playerBSets == 2)
+    {
+        <h2><strong>Nailbiter!!</strong></h2>
+    }
     <hr>
-
-    <h5 hidden="@(!gameStarted || isGameOver)">
+    <h3 hidden="@(!gameStarted )">
         <strong>
-
             Game: @roundCount <br />
             Current Set Score:  @CalculateScore() <br />
+            (@currentSetScore)
         </strong>
         <hr>
-    </h5>
-
+    </h3>
 
     @if (isGameOver)
     {
-        <br />
         <div class="alert alert-success">
-            <strong>@CalculateScore()</strong>
-            <br />
             <button class="btn btn-outline-success" @onclick="RestartGame">Restart Game</button>
         </div>
     }
@@ -57,7 +60,7 @@ Mvh Johannes
     private int playerBSets = 0;
     private bool isGameOver = false;
     private bool gameStarted = false;
-
+    private string setWinner = "";
     /*various counter variables*/
     private int roundCount => (playerASets + playerBSets) + 1;
     private string currentSetScore => $"{playerAScore}-{playerBScore}";
@@ -68,16 +71,18 @@ Mvh Johannes
         gameStarted = true;
         if (isGameOver)
         {
+            setWinner = "";
             RestartGame();
             StartGame();
         }
 
     }
-    private void RestartSet()
+    private void RestartSet() //forces user to press "start" button again in order to not missinput a score-press
     {
         playerAScore = 0;
         playerBScore = 0;
-        gameStarted = false; //forces user to press "start" button again in order to not missinput a score-press
+        gameStarted = false; 
+      
     }
 
     private void RestartGame()
@@ -88,6 +93,7 @@ Mvh Johannes
         playerBSets = 0;
         isGameOver = false;
         gameStarted = false;
+        setWinner = "";
     }
 
     private void PlayerAScores()
@@ -114,12 +120,14 @@ Mvh Johannes
         if (playerAScore >= 4 && playerAScore >= playerBScore + 2)
         {
             playerASets++;
-            if (playerASets == 3) // best of 3 rule since i didnt quite get the tie-breaker part.
+            if (playerASets == 3) // first to 3 rule since i didnt quite get the tie-breaker part.
             {
+
                 isGameOver = true;
             }
             else
             {
+                setWinner = "Player A";
                 RestartSet();
             }
         }
@@ -132,6 +140,7 @@ Mvh Johannes
             }
             else
             {
+                setWinner = "Player B";
                 RestartSet();
             }
         }
@@ -139,24 +148,29 @@ Mvh Johannes
 
 
     private string CalculateScore()
-    {
+    {    @*
+        //Notes here: I was not sure if i wanted to keep this part about tie-breaks, since im not certain if i undertand them completely
+        // It feels pointless if there still is a 2 point difference needed. would be a different story if the tie-breaks are decided with a 1 score diffrence
+        // if (playerAScore >= 7 && playerAScore >= playerBScore + 2) // for example here, if the "(playerAScore >= playerBScore + 2) would be "(playerAScore >= playerBScore + 1)" it would make sense,
+        // but apparently, thats not the case. Might have missunderstood aswell. never played tennis.
+        //EDIT: kept it for fun, not too proud of it though.
+         *@
         string matchState = "";
         string[] scores = { "Love", "Fifteen", "Thirty", "Forty" };
-        @*
-        //Notes here: I wasnt sure if i wanted to keep this part, since im not certain if i undertand tie-breaks.
-        // It feels pointless if there still is a 2 point difference needed. would be a different story if the tie-breaks are decided with a 1 score diffrence
-       // if (playerAScore >= 7 && playerAScore >= playerBScore + 2) // for example here, if the "(playerAScore >= playerBScore + 2) would be "(playerAScore >= playerBScore + 1)" it would make sense,
-        //but apparently, thats not the case. Might have missunderstood aswell. never played tennis.
+        int difference = Math.Abs(playerAScore - playerBScore);
+        
+        if (playerAScore >= 7 && playerAScore >= playerBScore + 2)
         {
-            matchState = "Player A wins (Tie-Break)";
+           
+            matchState = "Player A wins (Tie-Break)!";
         }
         else if (playerBScore >= 7 && playerBScore >= playerAScore + 2)
         {
-            matchState = "Player B wins (Tie-Break)";
+           
+            matchState = "Player B wins (Tie-Break)!";
         }
         else if (playerAScore >= 6 && playerBScore >= 6)
         {
-            int difference = Math.Abs(playerAScore - playerBScore);
             if (difference == 0)
             {
                 matchState = "Tie-Break: " + playerAScore + " - " + playerBScore;
@@ -165,23 +179,25 @@ Mvh Johannes
             {
                 if (playerAScore > playerBScore)
                 {
-                    matchState = "Advantage Player A (Tie-Break)";
+                    matchState = "Advantage Player A! (Tie-Break)";
                 }
                 else
                 {
-                    matchState = "Advantage Player B (Tie-Break)";
+                    matchState = "Advantage Player B! (Tie-Break)";
                 }
             }
-        }*@
-        if (isGameOver)
+        }
+        else if (isGameOver)
         {
             if (playerAScore >= 4 && playerAScore >= playerBScore + 2)
             {
-                matchState = "Player A wins";
+                
+                matchState = "Player A wins!";
             }
             else if (playerBScore >= 4 && playerBScore >= playerAScore + 2)
             {
-                matchState = "Player B wins";
+                
+                matchState = "Player B wins!";
             }
         }
         else if (playerAScore < 3 && playerBScore < 3 && playerAScore >= 1 && playerBScore >= 1)
@@ -197,19 +213,19 @@ Mvh Johannes
         }
         else if (playerAScore >= 3 && playerBScore >= 3)
         {
-            if (playerAScore == playerBScore)
+            if (difference == 0)
             {
                 matchState = "Deuce";
             }
-            else if (Math.Abs(playerAScore - playerBScore) == 1)
+            else if (difference == 1)
             {
                 if (playerAScore > playerBScore)
                 {
-                    matchState = "Advantage Player A! ";
+                    matchState = "Advantage Player A!";
                 }
                 else
                 {
-                    matchState = "Advantage Player B! ";
+                    matchState = "Advantage Player B!";
                 }
             }
         }
