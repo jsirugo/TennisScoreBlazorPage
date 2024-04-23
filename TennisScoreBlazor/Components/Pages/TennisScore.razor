@@ -5,17 +5,16 @@
 @* NOTES:  *@
 @* I am well aware of using <br> is non-semantic and should be done in css, but in this app i mainly focused on code, and not styling. Same goes for <strong> and <hr>  *@
 @* I simply chose to build the html fairly quickly and kept it simple, not to spend too much time on this part. *@
-@*  If you want me to do redo this part correctly, just give me a heads up and i will fix it!*@
-@* Hope this meets your requirements! :)  *@
+@* If you want me to do redo this part correctly, just give me a heads up and i will fix it!*@
+@* Hope this meets your requirements! :) 
+Mvh Johannes
+*@
 <h1 class="display-6">
     TennisScore Calculator
     <small class="text-muted">By Johannes Sirugo</small>
 </h1>
 
-
-
 <button style="visibility: @(gameStarted ? "hidden" : "visible")" class="btn btn-success" @onclick="StartGame">Start Game</button>
-
 <button class="btn btn-secondary" @onclick="PlayerAScores" disabled="@(!gameStarted || isGameOver)">Player A scores!</button>
 <button class="btn btn-secondary" @onclick="PlayerBScores" disabled="@(!gameStarted || isGameOver)">Player B scores!</button>
 <br />
@@ -26,11 +25,11 @@
 
 
 <h5 hidden="@(!gameStarted || isGameOver)">
- <strong>Current Match Score: @currentMatchScore  </strong>
+    <strong>Current Match Score: @currentMatchScore  </strong>
     <strong>
         <br />
-        Game: @roundCount <br /> 
-        Current Set Score:  @CalculateScore() <br /> 
+        Game: @roundCount <br />
+        Current Set Score:  @CalculateScore() <br />
     </strong>
     <hr>
 </h5>
@@ -39,8 +38,6 @@
 
 @if (isGameOver)
 {
-   
-   
     <br />
     <div class="alert alert-success">
         <strong>@CalculateScore()</strong>
@@ -60,7 +57,7 @@
 
     /*various counter variables*/
     private int roundCount => (playerASets + playerBSets) + 1;
-    private string currentSetScore    => $"{playerAScore}-{playerBScore}";
+    private string currentSetScore => $"{playerAScore}-{playerBScore}";
     private string currentMatchScore => $"{playerASets}-{playerBSets}";
 
     private void StartGame()
@@ -80,7 +77,7 @@
         gameStarted = false; //forces user to press "start" button again in order to not missinput a score-press
     }
 
-    private void RestartGame()
+    private void RestartGame() 
     {
         playerAScore = 0;
         playerBScore = 0;
@@ -114,7 +111,7 @@
         if (playerAScore >= 4 && playerAScore >= playerBScore + 2)
         {
             playerASets++;
-            if (playerASets == 3)
+            if (playerASets == 3) // best of 3 rule since i didnt quite get the tie-breaker part.
             {
                 isGameOver = true;
             }
@@ -142,9 +139,11 @@
     {
         string matchState = "";
         string[] scores = { "Love", "Fifteen", "Thirty", "Forty" };
-  @*
-  //Notes here: I wasnt sure if i wanted to keep this part, since im not certain if i undertand tie-breaks. It feels pointless if there still is a 2 point difference needed. would be a different story if the tie-breaks are decided with a 1 score diffrence
-        if (playerAScore >= 7 && playerAScore >= playerBScore + 2) // for example here, if the "(playerAScore >= playerBScore + 2) would be "(playerAScore >= playerBScore + 1)" it would make sense, but apparently, thats not the case. Might have missunderstood aswell. never played tennis.
+        @*
+        //Notes here: I wasnt sure if i wanted to keep this part, since im not certain if i undertand tie-breaks. 
+        // It feels pointless if there still is a 2 point difference needed. would be a different story if the tie-breaks are decided with a 1 score diffrence
+       // if (playerAScore >= 7 && playerAScore >= playerBScore + 2) // for example here, if the "(playerAScore >= playerBScore + 2) would be "(playerAScore >= playerBScore + 1)" it would make sense,
+        //but apparently, thats not the case. Might have missunderstood aswell. never played tennis.
         {
             matchState = "Player A wins (Tie-Break)";
         }
@@ -169,9 +168,9 @@
                 {
                     matchState = "Advantage Player B (Tie-Break)";
                 }
-            } 
+            }
         }*@
-         if (isGameOver)
+        if (isGameOver)
         {
             if (playerAScore >= 4 && playerAScore >= playerBScore + 2)
             {
@@ -201,7 +200,14 @@
             }
             else if (Math.Abs(playerAScore - playerBScore) == 1)
             {
-                matchState = playerAScore > playerBScore ? "Advantage Player A" : "Advantage Player B";
+                if (playerAScore > playerBScore)
+                {
+                    matchState = "Advantage Player A! ";
+                }
+                else
+                {
+                    matchState = "Advantage Player B! ";
+                }
             }
         }
         else
