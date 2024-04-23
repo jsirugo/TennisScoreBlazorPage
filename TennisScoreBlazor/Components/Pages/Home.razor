@@ -1,161 +1,18 @@
 ﻿@page "/"
 @rendermode InteractiveServer
+@inject NavigationManager NavigationManager
 
-<PageTitle>TennisScore Calculator!</PageTitle>
-
-<h1 class="display-6">
-    TennisScore Calculator
-    <small class="text-muted">By Johannes Sirugo</small>
-</h1>
+<PageTitle>Homepage</PageTitle>
 
 
-<p>Player A Score: @playerAScore</p>
-<p>Player B Score: @playerBScore</p>
+<div class="align-content-center">
 
-<button class="btn btn-success" @onclick="StartGame">Start Game</button>
-<button class="btn btn-secondary" @onclick="PlayerAScores" disabled="@(!gameStarted || isGameOver)">Player A scores!</button>
-<button class="btn btn-secondary" @onclick="PlayerBScores" disabled="@(!gameStarted || isGameOver)">Player B scores!</button>
-
-<p hidden="@(!gameStarted || isGameOver)">
-    <strong>
-        Round: @roundCount <br />
-        @CalculateScore()
-    </strong>
-</p>
-<p hidden="@(!gameStarted || isGameOver)"></p>
-<p>Current Set Score: @currentSetScore</p>
-<p>Current Match Score: @currentMatchScore</p>
-
-
-@if (isGameOver)
-{
-    <button class="btn btn-outline-success" @onclick="RestartGame">Restart Game</button>
-}
+<button class="btn btn-success" @onclick="NavigateToGame" >Go to Tennis Game Calculator!</button>
+</div>
 
 @code {
-    /*needed variables*/
-    private int playerAScore = 0;
-    private int playerBScore = 0;
-    private int playerASets = 0;
-    private int playerBSets = 0;
-    private bool isGameOver = false;
-    private bool gameStarted = false;
-
-    /*various counter variables*/
-    private int roundCount => (playerASets + playerBSets) + 1;
-    private string currentSetScore => $"{playerAScore}-{playerBScore}";
-    private string currentMatchScore => $"{playerASets}-{playerBSets}";
-
-    private void StartGame()
+    private void NavigateToGame()
     {
-        gameStarted = true;
-        if (isGameOver)
-        {
-            RestartGame();
-            StartGame();
-        }
-
-    }
-    private void RestartSet()
-    {
-        playerAScore = 0;
-        playerBScore = 0;
-        gameStarted = false; //forces user to press "start" button again in order to not missinput a score-press
-    }
-
-    private void RestartGame()
-    {
-        playerAScore = 0;
-        playerBScore = 0;
-        playerASets = 0;
-        playerBSets = 0;
-        isGameOver = false;
-        gameStarted = false;
-    }
-
-    private void PlayerAScores()
-    {
-        if (!isGameOver)
-        {
-            playerAScore++;
-            CheckGameStatus();
-        }
-    }
-
-    private void PlayerBScores()
-    {
-        if (!isGameOver)
-        {
-            playerBScore++;
-            CheckGameStatus();
-        }
-    }
-
-    private void CheckGameStatus()
-    {
-        if (playerAScore >= 4 && playerAScore >= playerBScore + 2)
-        {
-            playerASets++;
-            if (playerASets == 3)
-            {
-                isGameOver = true;
-            }
-            else
-            {
-                RestartSet();
-            }
-        }
-        else if (playerBScore >= 4 && playerBScore >= playerAScore + 2)
-        {
-            playerBSets++;
-            if (playerBSets == 3)
-            {
-                isGameOver = true;
-            }
-            else
-            {
-                RestartSet();
-            }
-        }
-    }
-
-    private string CalculateScore()
-    {
-        string matchState = "";
-        if (isGameOver)
-        {
-            if (playerAScore >= 4 && playerAScore >= playerBScore + 2)
-            {
-                matchState = "Player A wins";
-                return matchState;
-            }
-            else if (playerBScore >= 4 && playerBScore >= playerAScore + 2)
-            {
-                matchState = "Player A wins";
-                return matchState;
-            }
-        }
-        else if (playerAScore >= 3 && playerBScore >= 3)
-        {
-            if (playerAScore == playerBScore)
-            {
-                matchState = "Deuce";
-                return matchState;
-            }
-            else if (Math.Abs(playerAScore - playerBScore) == 1)
-            {
-                if (playerAScore > playerBScore)
-                {
-                    matchState = "Advantage Player A";
-                }
-                else if (playerAScore < playerBScore)
-                {
-                    matchState = "Advantage Player B";
-                }
-                return matchState;
-            }
-        }
-        string[] scores = { "Love", "Fifteen", "Thirty", "Forty" };
-        return $"{scores[playerAScore]} - {scores[playerBScore]}";
+        NavigationManager.NavigateTo("/TennisScoreMaster");
     }
 }
