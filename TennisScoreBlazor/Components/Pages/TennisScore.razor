@@ -6,46 +6,49 @@
 @* I am well aware of using <br> is non-semantic and should be done in css, but in this app i mainly focused on code, and not styling. Same goes for <strong> and <hr>  *@
 @* I simply chose to build the html fairly quickly and kept it simple, not to spend too much time on this part. *@
 @* If you want me to do redo this part correctly, just give me a heads up and i will fix it!*@
-@* Hope this meets your requirements! :) 
+@* Hope this meets your requirements! :)
 Mvh Johannes
 *@
-<h1 class="display-6">
-    TennisScore Calculator
-    <small class="text-muted">By Johannes Sirugo</small>
-</h1>
-
-<button style="visibility: @(gameStarted ? "hidden" : "visible")" class="btn btn-success" @onclick="StartGame">Start Game</button>
-<button class="btn btn-secondary" @onclick="PlayerAScores" disabled="@(!gameStarted || isGameOver)">Player A scores!</button>
-<button class="btn btn-secondary" @onclick="PlayerBScores" disabled="@(!gameStarted || isGameOver)">Player B scores!</button>
-<br />
-<hr>
-<h2>Player A Score: @playerAScore</h2>
-<h2>Player B Score: @playerBScore</h2>
-<hr>
+<div class="text-center">
+    <h1 class="display-6">
+        TennisScore Calculator
+        <small class="text-muted">By Johannes Sirugo</small>
+    </h1>
 
 
-<h5 hidden="@(!gameStarted || isGameOver)">
-    <strong>Current Match Score: @currentMatchScore  </strong>
-    <strong>
-        <br />
-        Game: @roundCount <br />
-        Current Set Score:  @CalculateScore() <br />
-    </strong>
-    <hr>
-</h5>
+    <button hidden="@(gameStarted)" class="btn btn-success" @onclick="StartGame">Start Game</button>
+    <button hidden="@(!gameStarted)" class="btn btn-danger" @onclick="RestartGame">Restart Game</button>
 
-
-
-@if (isGameOver)
-{
+    <br /><br />
+    <button class="btn btn-secondary" @onclick="PlayerAScores" disabled="@(!gameStarted || isGameOver)">Player A scores!</button>
+    <button class="btn btn-secondary" @onclick="PlayerBScores" disabled="@(!gameStarted || isGameOver)">Player B scores!</button>
     <br />
-    <div class="alert alert-success">
-        <strong>@CalculateScore()</strong>
-        <br />
-        <button class="btn btn-outline-success" @onclick="RestartGame">Restart Game</button>
-    </div>
-}
+    <hr>
+    <h2>Current Match Score: @currentMatchScore </h2>
+    <h2>Player A Score: @playerAScore</h2>
+    <h2>Player B Score: @playerBScore</h2>
+    <hr>
 
+    <h5 hidden="@(!gameStarted || isGameOver)">
+        <strong>
+
+            Game: @roundCount <br />
+            Current Set Score:  @CalculateScore() <br />
+        </strong>
+        <hr>
+    </h5>
+
+
+    @if (isGameOver)
+    {
+        <br />
+        <div class="alert alert-success">
+            <strong>@CalculateScore()</strong>
+            <br />
+            <button class="btn btn-outline-success" @onclick="RestartGame">Restart Game</button>
+        </div>
+    }
+</div>
 @code {
     /*needed variables*/
     private int playerAScore = 0;
@@ -77,7 +80,7 @@ Mvh Johannes
         gameStarted = false; //forces user to press "start" button again in order to not missinput a score-press
     }
 
-    private void RestartGame() 
+    private void RestartGame()
     {
         playerAScore = 0;
         playerBScore = 0;
@@ -140,7 +143,7 @@ Mvh Johannes
         string matchState = "";
         string[] scores = { "Love", "Fifteen", "Thirty", "Forty" };
         @*
-        //Notes here: I wasnt sure if i wanted to keep this part, since im not certain if i undertand tie-breaks. 
+        //Notes here: I wasnt sure if i wanted to keep this part, since im not certain if i undertand tie-breaks.
         // It feels pointless if there still is a 2 point difference needed. would be a different story if the tie-breaks are decided with a 1 score diffrence
        // if (playerAScore >= 7 && playerAScore >= playerBScore + 2) // for example here, if the "(playerAScore >= playerBScore + 2) would be "(playerAScore >= playerBScore + 1)" it would make sense,
         //but apparently, thats not the case. Might have missunderstood aswell. never played tennis.
